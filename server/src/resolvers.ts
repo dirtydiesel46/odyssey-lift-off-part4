@@ -19,14 +19,22 @@ export const resolvers: Resolvers = {
   },
   Mutation: {
     // increments a track's numberOfViews property
-    incrementTrackViews: async (_, {id}, {dataSources}) => {
+    incrementTrackViews: async (_, { id }, { dataSources }) => {
       const track = await dataSources.trackAPI.incrementTrackViews(id);
-
-      return {
-        code: 200,
-        success: true,
-        message: `Successfully incremented number of views for track ${id}`,
-        track,
+      try {
+        return {
+          code: 200,
+          success: true,
+          message: `Successfully incremented number of views for track ${id}`,
+          track,
+        };
+      } catch (error) {
+        return {
+          code: error.extensions.response.status,
+          success: false,
+          message: error.extensions.response.body,
+          track: null,
+        };
       }
     },
   },
